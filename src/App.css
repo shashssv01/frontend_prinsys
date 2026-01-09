@@ -1,12 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   font-family: Arial, sans-serif;
   text-align: center;
   margin-top: 50px;
-}
-
-h1 {
-  font-size: 2rem;
-  color: #333;
 }
 
 .status {
@@ -32,6 +31,13 @@ h1 {
 }
 
 p {
-  font-size: 1rem;
-  color: #555;
+  @apply text-slate-100;
+}
+
+h1, h2 {
+  @apply text-slate-100 font-bold;
+}
+
+.alert-box {
+  box-shadow: .5px .5px .5px 0px #dfd0b825 inset, -.1px -.1px .5px 0px inset;
 }
