@@ -43,6 +43,10 @@ function App() {
         <img className={"h-16"} src="prinsys.png"></img>
         <img className={"h-16"} src="aalto.png"></img>
       </div>
+      <div className={"pr-6 pl-3 fixed left-2 top-2 flex flex-col"}>
+        <p className={"text-xl"}>Feedback</p>
+        <img className={"h-64 w-64"} src="qr-code.png"></img>
+      </div>
       <h1 class="text-5xl">Team Prinsys</h1>
       <h2 class="text-2xl">Water Leakage Detection System</h2>
       <div>
