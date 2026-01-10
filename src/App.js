@@ -1,30 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from '@supabase/supabase-js'
 import './App.css';
 
 document.body.style.backgroundColor = "#222831";
+const supabase = createClient('https://usuujbwztwljaytklyws.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdXVqYnd6dHdsamF5dGtseXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMjgyOTYsImV4cCI6MjA4MzYwNDI5Nn0.nD90ciMvi2_8f5KtAnenjn_jStRwu2FnFkXtWezQ2iA')
+
+// Create a single supabase client for interacting with your database
+
+// TODO: Update these values
 
 function App() {
-  // const apiUrl = process.env.REACT_APP_API_URL;
-  // const [leakageData, setLeakageData] = useState(null);  // useState now works
-  // useEffect(() => {
-  //   fetch(`${apiUrl}/water-leakage`)
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       console.log(data);  // Check the data received
-  //       setLeakageData(data);  // Update the state with the received data
-  //     })
-  //     .catch(error => console.error("Error fetching data:", error));
-  // }, [apiUrl]);
+  const [alerts, setAlerts] = useState([]);
+  
+  useEffect(() => {
+    const channel = supabase
+      .channel("schema-db-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+        },
+        (payload) => {
+          setAlerts((prev) => [
+            ...prev,
+            {
+              time: payload.commit_timestamp,
+              room: payload.new.room,
+              location: payload.new.location,
+            },
+          ]);
+        }
+      )
+      .subscribe();
 
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
   return (
     <div className="App">
       <h1 class="text-5xl">Team Prinsys</h1>
       <h2 class="text-2xl">Water Leakage Detection System</h2>
       <div>
-        <div class="flex flex-col-reverse gap-4 w-[50%] m-auto my-8">
-          <Alert room="Room 68.2" location="Roof" datetime="2025-09-01 22:12" />
-          <Alert room="Room 67.6" location="Bathroom" datetime="2025-09-01 22:19" isResolved="true" />
-          <Alert room="Room 68.1" location="Window" datetime="2025-09-01 22:23" />
+        <button onClick={() => setAlerts([])} className="hover:to-red-500 active:to-red-700 active:from-red-700 px-8 py-3 mt-8  rounded text-white bg-gradient-to-b from-red-500 to-red-600">Clear all alerts</button>
+        <button onClick={() => setAlerts([])} className="hover:to-green-500 active:to-green-700 active:from-green-700 px-8 py-3 mt-8  rounded text-white bg-gradient-to-b from-green-500 to-green-600">Resolve all alerts</button>
+        <div className="flex flex-col-reverse gap-4 w-[50%] m-auto my-8">
+          {alerts.map((msg, index) => (
+            <Alert room={msg.room} location={msg.location} datetime={msg.time} />
+          ))}
         </div>
       </div>
     </div>
@@ -33,12 +57,20 @@ function App() {
 
 function Alert({ building = "Building 3", room, location, datetime, isResolved = false }) {
   const [resolved, setResolved] = useState(isResolved);
+  const [flash, setFlash] = useState(true);
+
+  useEffect(() => {
+    // Remove flash after 1 second
+    const timer = setTimeout(() => setFlash(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <div className="flex flex-col items-start p-3 rounded bg-gradient-to-b from-[#393E46] to-[#2e333b] alert-box cursor-pointer"
+    <div className={"flex flex-col items-start p-3 rounded bg-gradient-to-b from-[#393E46] to-[#2e333b] alert-box cursor-pointer " + (flash ? "animate-bounce" : "")
+  }
          onClick={() => setResolved(prev => !prev)}
       >
-      <p>{building} • {room}</p>
+      <p>{building} • {room} • Receiver 0x34a</p>
       <p className="text-lg font-bold">{location}</p>
       <p>Water Leakage Alert • {datetime} • <span className={'font-bold ' + (resolved ? "text-green-400" : "text-red-400")}>{resolved ? "Resolved" : "Unresolved"}</span></p>
     </div>
