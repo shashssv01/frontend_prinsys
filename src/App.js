@@ -3,13 +3,10 @@ import { createClient } from '@supabase/supabase-js'
 import { AnimatePresence, motion } from "framer-motion";
 import './App.css';
 
-document.body.style.background = "linear-gradient(rgba(34, 40, 49, 0.8), rgba(34, 40, 49, 0.8)), url('./bg.jpg')";
-document.body.style.backgroundSize = "cover"
+document.body.style.backgroundColor = "#222831";
 const supabase = createClient('https://usuujbwztwljaytklyws.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVzdXVqYnd6dHdsamF5dGtseXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgwMjgyOTYsImV4cCI6MjA4MzYwNDI5Nn0.nD90ciMvi2_8f5KtAnenjn_jStRwu2FnFkXtWezQ2iA')
 
 // Create a single supabase client for interacting with your database
-
-// TODO: Update these values
 
 function App() {
   const [alerts, setAlerts] = useState([]);
@@ -73,13 +70,6 @@ function App() {
 
 function Alert({ building = "Building 3", room, location, datetime, isResolved = false }) {
   const [resolved, setResolved] = useState(isResolved);
-  const [flash, setFlash] = useState(true);
-
-  useEffect(() => {
-    // Remove flash after 1 second
-    const timer = setTimeout(() => setFlash(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <div className={"flex flex-col items-start p-3 rounded bg-gradient-to-b from-[#393E46] to-[#2e333b] alert-box cursor-pointer"
